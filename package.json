@@ -1,9 +1,21 @@
 {
   "name": "tea-bot",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./out/index.js",
   "repository": "https://github.com/Tea-Cup/tea-bot.git",
   "author": "CozyTeacup",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "tsc --build",
+    "watch": "tsc --watch",
+    "start": "node ."
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.14",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.1"
+  }
 }
