@@ -22,3 +22,5 @@ jobs:
     steps:
       - name: Lint Action
         uses: wearerequired/lint-action@v1.7.0
+        with:
+          github_token: ${{ secrets.SECRET_NAME }}
