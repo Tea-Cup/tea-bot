@@ -1,0 +1,9 @@
+{
+  "name": "tea-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Tea-Cup/tea-bot.git",
+  "author": "CozyTeacup",
+  "license": "MIT",
+  "private": true
+}
