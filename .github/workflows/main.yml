@@ -23,4 +23,4 @@ jobs:
       - name: Lint Action
         uses: wearerequired/lint-action@v1.7.0
         with:
-          github_token: ${{ secrets.SECRET_NAME }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
