@@ -91,7 +91,7 @@ export function createCommand(cmd: SimpleCommand): ParsedCommand;
 export function createCommand(
   cmd: Command<CommandArguments> | SimpleCommand
 ): ParsedCommand {
-  if (validateName(cmd.name))
+  if (!validateName(cmd.name))
     throw new CommandValidationError('Invalid command name', cmd.name);
   if (!cmd.handler) throw new CommandValidationError('No handler on command', cmd.name);
 
