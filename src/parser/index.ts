@@ -72,6 +72,7 @@ function parseArgs(cmd: Command<CommandArguments>): ParsedCommand {
 
   return {
     name: cmd.name,
+    description: cmd.description,
     arguments: ordered,
     handler: cmd.handler
   };
@@ -79,6 +80,7 @@ function parseArgs(cmd: Command<CommandArguments>): ParsedCommand {
 function parseSimple(cmd: SimpleCommand): ParsedCommand {
   return {
     name: cmd.name,
+    description: cmd.description,
     arguments: [],
     handler: cmd.handler
   };

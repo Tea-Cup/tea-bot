@@ -27,6 +27,7 @@ export type CommandHandler<T> = (args: CommandHandlerArgs<T>, msg: Message) => v
 
 export type Command<T extends CommandArguments> = {
   name: string;
+  description: string;
   arguments: T;
   format: string;
   handler: CommandHandler<T>;
@@ -34,6 +35,7 @@ export type Command<T extends CommandArguments> = {
 
 export type SimpleCommand = {
   name: string;
+  description: string;
   handler: CommandHandler<unknown>;
 };
 
@@ -46,6 +48,7 @@ export type ParsedArgument = {
 
 export type ParsedCommand = {
   name: string;
+  description: string;
   arguments: ParsedArgument[];
   handler: CommandHandler<CommandArguments>;
 };
