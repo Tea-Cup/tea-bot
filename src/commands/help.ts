@@ -1,14 +1,18 @@
+import { MessageEmbed } from 'discord.js';
+import { getCommandsHelp } from '.';
 import { createCommand } from '../parser';
+import { getSetting } from '../settings';
 
 export default createCommand({
   name: 'help',
-  arguments: {
-    string: 'string',
-    number: 'number',
-    stringarr: 'string[]'
-  },
-  format: 'string number stringarr',
+  description: 'list of commands and their usage',
   handler: (args, msg) => {
-    msg.reply('```json\n' + JSON.stringify(args, undefined, 2) + '\n```');
+    const prefix = getSetting(msg.guild?.id, 'prefix');
+    const help = getCommandsHelp();
+    const embed = new MessageEmbed();
+    for (const cmd of help){
+      embed.addField(`${prefix}${cmd.name} ${cmd.usage}`, cmd.description);
+    }
+    msg.reply(embed);
   }
 });

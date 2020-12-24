@@ -5,7 +5,7 @@ import {
   ParsedArgument,
   ParsedCommand
 } from '../parser/types';
-import { Collection } from '../util';
+import { Collection, keysOf } from '../util';
 import { Validator } from 'jsonschema';
 import fs from 'fs';
 import path from 'path';
@@ -91,4 +91,21 @@ export function runCommand(input: string, msg: Message) {
     args[arg.name] = result;
   }
   cmd.handler(args, msg);
+}
+
+function getUsageOfArgument(arg: ParsedArgument) {
+  const name = `${arg.name}: ${arg.type}${arg.array ? '[]' : ''}`;
+  return arg.required ? `<${name}>` : `[${name}]`;
+}
+export function getCommandsHelp() {
+  const result: Record<'name'|'description'|'usage', string>[] = [];
+  for (const cmdName of keysOf(commands)) {
+    const cmd = commands[cmdName];
+    result.push({
+      name: cmdName,
+      usage: cmd.arguments.map(getUsageOfArgument).join(' '),
+      description: cmd.description
+    })
+  }
+  return result;
 }
