@@ -1,18 +1,26 @@
 import { Message } from 'discord.js';
 import { ParsedCommand } from '../parser/types';
 import { Collection } from '../util';
+import { Validator } from 'jsonschema';
 import fs from 'fs';
 import path from 'path';
+import { parsedCommand } from '../schema';
+
+const validator = new Validator();
+function validateCommand(cmd: ParsedCommand) {
+  return validator.validate(cmd, parsedCommand);
+}
 
 const commands: Collection<ParsedCommand> = {};
 function loadCommand(path: string): ParsedCommand | undefined {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const cmd = require(path) as ParsedCommand;
-  if (typeof cmd.name !== 'string') return;
-  if (!cmd.arguments || !Array.isArray(cmd.arguments)) return;
-  for (const arg of cmd.arguments) {
-    throw new Error('TODO: Not implemented');
+  const validation = validateCommand(cmd);
+  if(!validation.valid) {
+    console.warn('Validation error on', path);
+    return undefined;
   }
+  return cmd;
 }
 function registerCommand(cmd: ParsedCommand) {
   commands[cmd.name] = cmd;
