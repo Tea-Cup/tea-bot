@@ -14,13 +14,11 @@ export type ArgumentType<T> = T extends 'string'
   ? number[]
   : never;
 
+export type SimpleArgumentTypeName = 'string' | 'number';
 export type ArgumentTypeName =
-  | 'string'
-  | 'number'
-  | 'string?'
-  | 'number?'
-  | 'string[]'
-  | 'number[]';
+  | SimpleArgumentTypeName
+  | `${SimpleArgumentTypeName}?`
+  | `${SimpleArgumentTypeName}[]`;
 
 export type CommandArguments = { [k: string]: ArgumentTypeName };
 export type CommandHandlerArgs<T> = { [k in keyof T]: ArgumentType<T[k]> };
@@ -41,7 +39,7 @@ export type SimpleCommand = {
 
 export type ParsedArgument = {
   name: string;
-  type: ArgumentTypeName;
+  type: SimpleArgumentTypeName;
   array: boolean;
   required: boolean;
 };

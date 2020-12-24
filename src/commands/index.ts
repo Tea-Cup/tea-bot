@@ -1,10 +1,16 @@
 import { Message } from 'discord.js';
-import { ParsedCommand } from '../parser/types';
+import {
+  CommandArguments,
+  CommandHandlerArgs,
+  ParsedArgument,
+  ParsedCommand
+} from '../parser/types';
 import { Collection } from '../util';
 import { Validator } from 'jsonschema';
 import fs from 'fs';
 import path from 'path';
 import { parsedCommand } from '../schema';
+import { InvalidInputError } from '../errors';
 
 const validator = new Validator();
 function validateCommand(cmd: ParsedCommand) {
@@ -14,10 +20,12 @@ function validateCommand(cmd: ParsedCommand) {
 const commands: Collection<ParsedCommand> = {};
 function loadCommand(path: string): ParsedCommand | undefined {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const cmd = require(path) as ParsedCommand;
+  const cmd = require(path).default as ParsedCommand;
   const validation = validateCommand(cmd);
-  if(!validation.valid) {
+  if (!validation.valid) {
     console.warn('Validation error on', path);
+    console.warn(validation.errors);
+    console.warn(cmd);
     return undefined;
   }
   return cmd;
@@ -37,6 +45,50 @@ export function registerCommands() {
   }
 }
 
+function parseInput(input: string): string[] | null {
+  return input.match(/\w+|"(?:\\"|[^"])+"/g) as string[];
+}
+
+function parseNextArg(input: string[], arg: ParsedArgument) {
+  const val = input.shift();
+  if (val === undefined) {
+    if (arg.required)
+      throw new InvalidInputError(`Parameter '${arg.name}' is **required**`);
+    if (arg.array) return [];
+    return undefined;
+  }
+  if (arg.array) {
+    const arr = [val];
+    // With input.length we can be sure that input.shift() will return something
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    while (input.length) arr.push(input.shift()!);
+    if (arg.type === 'number') {
+      const numArr = arr.map((i) => +i);
+      if (numArr.includes(NaN))
+        throw new InvalidInputError(`Parameter '${arg.name}' must a **number** array`);
+      return numArr;
+    }
+    return arr;
+  } else {
+    if (arg.type === 'number') {
+      if (isNaN(+val))
+        throw new InvalidInputError(`Parameter '${arg.name}' must a **number** array`);
+      return +val;
+    }
+    return val;
+  }
+}
+
 export function runCommand(input: string, msg: Message) {
-  throw new Error('TODO: Not implemented');
+  const inputArgs = parseInput(input) || [input];
+  const cmdName = inputArgs.shift();
+  if (!cmdName) return;
+  const cmd = commands[cmdName];
+  if (!cmd) return;
+  const args: CommandHandlerArgs<CommandArguments> = {};
+  for (const arg of cmd.arguments) {
+    const result = parseNextArg(inputArgs, arg);
+    args[arg.name] = result;
+  }
+  cmd.handler(args, msg);
 }

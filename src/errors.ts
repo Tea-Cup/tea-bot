@@ -9,3 +9,9 @@ export class CommandValidationError extends Error {
     this.name = 'CommandValidationError';
   }
 }
+
+export class InvalidInputError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

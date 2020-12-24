@@ -1,8 +1,14 @@
 import { createCommand } from '../parser';
 
 export default createCommand({
-  name: '',
-  handler: (args, cmd) => {
-    throw new Error('TODO: Not implemented');
+  name: 'help',
+  arguments: {
+    string: 'string',
+    number: 'number',
+    stringarr: 'string[]'
+  },
+  format: 'string number stringarr',
+  handler: (args, msg) => {
+    msg.reply('```json\n' + JSON.stringify(args, undefined, 2) + '\n```');
   }
 });
