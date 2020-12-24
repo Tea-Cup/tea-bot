@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { parsedCommand } from '../schema';
 import { InvalidInputError } from '../errors';
+import { getSetting } from '../settings';
 
 const validator = new Validator();
 function validateCommand(cmd: ParsedCommand) {
@@ -85,6 +86,7 @@ export function runCommand(input: string, msg: Message) {
   if (!cmdName) return;
   const cmd = commands[cmdName];
   if (!cmd) return;
+  if (cmd.secret && msg.author.id !== getSetting(msg.guild?.id, 'secretUser')) return;
   const args: CommandHandlerArgs<CommandArguments> = {};
   for (const arg of cmd.arguments) {
     const result = parseNextArg(inputArgs, arg);
@@ -97,15 +99,16 @@ function getUsageOfArgument(arg: ParsedArgument) {
   const name = `${arg.name}: ${arg.type}${arg.array ? '[]' : ''}`;
   return arg.required ? `<${name}>` : `[${name}]`;
 }
-export function getCommandsHelp() {
-  const result: Record<'name'|'description'|'usage', string>[] = [];
+export function getCommandsHelp(secret?: boolean) {
+  const result: Record<'name' | 'description' | 'usage', string>[] = [];
   for (const cmdName of keysOf(commands)) {
     const cmd = commands[cmdName];
+    if (cmd.secret && !secret) continue;
     result.push({
       name: cmdName,
       usage: cmd.arguments.map(getUsageOfArgument).join(' '),
-      description: cmd.description
-    })
+      description: (cmd.secret ? ':spy: ' : '') + cmd.description
+    });
   }
   return result;
 }

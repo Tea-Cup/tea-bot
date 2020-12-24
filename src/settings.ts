@@ -2,6 +2,7 @@ import { Collection } from './util';
 
 export interface Settings {
   prefix?: string;
+  secretUser?: string;
 }
 
 export interface SettingsCollection extends Collection<Settings> {
@@ -9,7 +10,8 @@ export interface SettingsCollection extends Collection<Settings> {
 }
 const settings: SettingsCollection = {
   default: {
-    prefix: '+'
+    prefix: '+',
+    secretUser: '307894026580000769'
   }
 };
 
