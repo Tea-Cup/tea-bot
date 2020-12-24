@@ -62,7 +62,7 @@ function parseArgs(cmd: Command<CommandArguments>): ParsedCommand {
     delete parsed[name];
   }
 
-  const leftover = Object.keys(parsed);
+  const leftover = keysOf(parsed);
   if (leftover.length)
     throw new CommandValidationError(
       'Arguments not specified in format ' +
