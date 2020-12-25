@@ -2,7 +2,11 @@ import { Collection, Message } from 'discord.js';
 import { createCommand } from '../parser';
 import prompt from '../prompt';
 
-// TODO DiscordAPIError: You can only bulk delete messages that are under 14 days old.
+function canBulkDelete(msg: Message) {
+  const diffTime = Math.abs(new Date().getTime() - msg.createdAt.getTime());
+  const diffDays = Math.ceil(diffTime / (1000*60*60*24));
+  return diffDays < 14;
+}
 
 export default createCommand({
   name: 'clear',
@@ -20,7 +24,7 @@ export default createCommand({
     do {
       fetched = await msg.channel.messages.fetch({limit: 100});
       count += fetched.size;
-      msg.channel.bulkDelete(fetched);
+      await msg.channel.bulkDelete(fetched.filter(canBulkDelete));
     } while(fetched.size >= 2);
     msg.reply(`**${count}** messages have been deleted.`);
   }
